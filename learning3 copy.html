@@ -1,0 +1,122 @@
+<!--ROCK PAPER SCISSORS GAME-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ROCK PAPER SCISSORS</title>
+    </head>
+
+
+    <body>
+        <p>
+            Rock Paper Scissors
+        </p>
+        <button onclick = "
+        let computerMove = pickComputerMove();
+
+        console.log(computerMove);
+        playGame('Rock', computerMove);
+        
+        " 
+        title = "Rock"> Rock</button>
+
+        
+        <button onclick=
+        "
+        let computerMove2 = pickComputerMove();
+
+        console.log(computerMove2);
+
+        playGame('Paper', computerMove2);
+        " 
+        title = "Paper">Paper</button>
+
+
+        <button onclick=
+        "
+        let computerMove3 = pickComputerMove();
+        console.log(computerMove3);
+        playGame('Scissors', computerMove3);
+        
+        "
+         title = "Scissors">Scissors</button>
+
+
+        <script>
+
+            function playGame(playerMove, computerMove)
+            {
+                let result = '';
+                if (playerMove ==="Scissors")
+                {
+                        if(computerMove === 'rock')
+                    {
+                        result = 'You Lose';
+                        alert(`You picked ${playerMove} and the computer picked ${computerMove}, so ${result}.`);
+                    }else if(computerMove ==='paper')
+                    {
+                        result = 'You Win';
+
+                        alert(`You picked Scissors and the computer picked ${computerMove}, so ${result}.`);
+                    }else if(computerMove === 'scissors')
+                    {
+                        result = 'You Tie';
+                        alert(`You picked Scissors and the computer picked ${computerMove}, so ${result}.`);
+                    }
+                }
+                else if(playerMove ==="Paper")
+                {
+                    if(computerMove === 'rock')
+                    {
+                        result = 'You Win';
+                        alert(`You picked Paper and the computer picked ${computerMove}, so ${result}.`);
+                    }else if(computerMove ==='paper')
+                    {
+                        result = 'You Tie';
+
+                        alert(`You picked Paper and the computer picked ${computerMove}, so ${result}.`);
+                    }else if(computerMove === 'scissors')
+                    {
+                        result = 'You Lose';
+                        alert(`You picked Paper and the computer picked ${computerMove}, so ${result}.`);
+                    }
+                }else if(playerMove ==="Rock")
+                {
+                    if(computerMove === 'rock')
+                    {
+                        result = 'You Tie';
+                        alert(`You picked Rock and the computer picked ${computerMove}, so ${result}.`);
+                    }else if(computerMove ==='paper')
+                    {
+                        result = 'You Lose';
+
+                        alert(`You picked Rock and the computer picked ${computerMove}, so ${result}.`);
+                    }else if(computerMove === 'scissors')
+                    {
+                        result = 'You win';
+                        alert(`You picked Rock and the computer picked ${computerMove}, so ${result}.`);
+                    }
+                }
+
+                
+            }
+            //returns computer move and then sends it to each button
+            function pickComputerMove()
+            {
+                const randomNumber = Math.random();
+                if(randomNumber >= 0 && randomNumber < 1/3)
+                {
+                    computerMove= 'rock';
+                }else if(randomNumber >= 1/3 && randomNumber <2/3)
+                {
+                    computerMove= 'paper';
+                }else if(randomNumber >= 2/3 && randomNumber <1)
+                {
+                    computerMove= 'scissors';
+                }
+
+                return computerMove;
+            }
+        </script>
+    </body>
+
+</html>

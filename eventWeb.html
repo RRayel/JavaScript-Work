@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Hover and Click</title>
+    <style>
+       
+        img {
+            width: 400px;
+            height: 400px;
+            transition: all 0.3s ease; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Hover and Click on the Image</h1>
+    <img id="image" src="alibabSaluja.png" alt="Placeholder Image" />
+
+    <script>
+        
+        const img = document.getElementById('image');
+        
+        
+        const defaultImage = 'alibabSaluja.png';
+        const hoverImage = 'alibabaTransform.png';
+
+        
+        img.addEventListener('mouseover', () => {
+            img.src = hoverImage;
+        });
+
+        // Reset the image back to default when not hovered
+        img.addEventListener('mouseout', () => {
+            img.src = defaultImage;
+        });
+
+        // Alert on image click
+        img.addEventListener('click', () => {
+            alert('Ouch!');
+        });
+    </script>
+</body>
+</html>

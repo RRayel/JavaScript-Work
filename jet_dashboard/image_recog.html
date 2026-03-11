@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart Webcam — COCO-SSD (TensorFlow.js)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#111; color:#eee; display:flex; gap:16px; min-height:100vh; align-items:flex-start; justify-content:center; padding:24px; }
+    .card { background:#151515; border-radius:12px; padding:12px; box-shadow:0 6px 30px rgba(0,0,0,0.6); }
+    video { border-radius:8px; display:block; width:640px; height:480px; background:#222; }
+    canvas { position:absolute; left:0; top:0; pointer-events:none; }
+    .stage { position:relative; width:640px; height:480px; }
+    .controls { display:flex; flex-direction:column; gap:8px; margin-left:12px; min-width:260px; }
+    button, label { cursor:pointer; }
+    .status { font-size:0.9rem; color:#9aa; margin-top:8px; }
+    .badge { display:inline-block; padding:6px 10px; background:#1f7a1f; color:#fff; border-radius:999px; font-weight:600; }
+    pre { white-space:pre-wrap; word-wrap:break-word; color:#ddd; }
+    .small { font-size:0.9rem; color:#9aa; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Smart Webcam — COCO-SSD</h2>
+    <div class="stage" id="stage">
+      <video id="video" autoplay muted playsinline></video>
+      <canvas id="overlay"></canvas>
+    </div>
+    <div class="status" id="modelStatus">Model: <span class="small">loading…</span></div>
+  </div>
+
+  <div class="card controls">
+    <h3>Controls</h3>
+
+    <label>
+      <input id="toggleDetect" type="checkbox" checked />
+      Live detection
+    </label>
+
+    <label>
+      <input id="toggleAudio" type="checkbox" />
+      Alert on person detected (beep)
+    </label>
+
+    <label>
+      Detection interval (ms):
+      <input id="interval" type="number" value="200" min="50" step="50" style="width:90px; margin-left:8px;" />
+    </label>
+
+    <button id="snapshot">Take snapshot</button>
+    <button id="download">Download snapshot</button>
+
+    <div style="margin-top:12px;">
+      <strong>People detected:</strong> <span id="peopleCount" class="badge">0</span>
+    </div>
+
+    <div style="margin-top:12px;">
+      <strong>Last detections</strong>
+      <pre id="log" style="height:160px; overflow:auto; background:#0d0d0d; padding:8px; border-radius:6px;"></pre>
+    </div>
+
+    <div style="margin-top:8px;" class="small">
+      Serve this file from <code>http://localhost</code> or HTTPS. Use a local server like:
+      <pre>python -m http.server 8000</pre>
+    </div>
+  </div>
+
+  <!-- TensorFlow.js & coco-ssd -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.0.1/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+
+  <script>
+  (async () => {
+    // Elements
+    const video = document.getElementById('video');
+    const overlay = document.getElementById('overlay');
+    const ctx = overlay.getContext('2d');
+    const modelStatus = document.getElementById('modelStatus');
+    const toggleDetect = document.getElementById('toggleDetect');
+    const toggleAudio = document.getElementById('toggleAudio');
+    const intervalInput = document.getElementById('interval');
+    const peopleCountEl = document.getElementById('peopleCount');
+    const logEl = document.getElementById('log');
+    const snapshotBtn = document.getElementById('snapshot');
+    const downloadBtn = document.getElementById('download');
+
+    let model = null;
+    let running = false;
+    let lastRun = 0;
+    let lastPersonDetected = false;
+    let lastDetections = [];
+
+    // Beep audio context for notification
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function beep(duration=120, freq=440, vol=0.1) {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq;
+      o.connect(g);
+      g.connect(audioCtx.destination);
+      g.gain.value = vol;
+      o.start();
+      setTimeout(() => { o.stop(); }, duration);
+    }
+
+    // Utility: log lines
+    function logLine(s) {
+      const time = new Date().toLocaleTimeString();
+      logEl.textContent = `[${time}] ${s}\n` + logEl.textContent;
+      logEl.scrollTop = 0;
+    }
+
+    // Start webcam (must be served over https or localhost)
+    async function setupCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { width:640, height:480 }, audio:false });
+        video.srcObject = stream;
+        await new Promise(resolve => video.onloadedmetadata = resolve);
+        video.play();
+        overlay.width = video.videoWidth || 640;
+        overlay.height = video.videoHeight || 480;
+        modelStatus.innerHTML = 'Camera initialized';
+        return true;
+      } catch (err) {
+        modelStatus.innerHTML = 'Camera error: ' + (err.message || err);
+        console.error('Camera error', err);
+        return false;
+      }
+    }
+
+    // Load COCO-SSD model
+    async function loadModel() {
+      modelStatus.innerHTML = '<span class="small">Loading model…</span>';
+      // Option: pass a modelVariant like 'lite_mobilenet_v2' to cocoSsd.load() for a lighter/faster model.
+      model = await cocoSsd.load(); // default model
+      modelStatus.innerHTML = 'Model loaded — ready';
+      logLine('Model loaded');
+    }
+
+    // Draw single detection box
+    function drawBox(box, label, score, highlight=false) {
+      const [x, y, width, height] = box;
+      ctx.lineWidth = highlight ? 4 : 2;
+      ctx.strokeStyle = highlight ? 'rgba(0,255,128,0.9)' : 'rgba(255,165,0,0.95)';
+      ctx.fillStyle = highlight ? 'rgba(0,255,128,0.15)' : 'rgba(255,165,0,0.06)';
+      ctx.beginPath();
+      ctx.rect(x, y, width, height);
+      ctx.fill();
+      ctx.stroke();
+
+      // Label background
+      const text = `${label} ${(score*100).toFixed(1)}%`;
+      ctx.font = '16px system-ui';
+      const textWidth = ctx.measureText(text).width;
+      const pad = 6;
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(x, Math.max(0, y - 22), textWidth + pad*2, 20);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(text, x + pad, Math.max(0, y - 7));
+    }
+
+    // Main detection loop (throttled by interval)
+    async function detectLoop(now) {
+      if (!toggleDetect.checked) {
+        lastRun = now;
+        requestAnimationFrame(detectLoop);
+        return;
+      }
+      const interval = Math.max(50, Number(intervalInput.value) || 200);
+      if (now - lastRun < interval) {
+        requestAnimationFrame(detectLoop);
+        return;
+      }
+      lastRun = now;
+
+      if (!model) { requestAnimationFrame(detectLoop); return; }
+
+      // Run detection on current video frame
+      try {
+        const predictions = await model.detect(video);
+        // Clear overlay
+        ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+        // Filter: only show strong predictions
+        const minScore = 0.45;
+        const filtered = predictions.filter(p => p.score >= minScore);
+        // Draw boxes
+        let peopleCount = 0;
+        for (const p of filtered) {
+          const highlight = (p.class === 'person');
+          if (p.class === 'person') peopleCount++;
+          drawBox(p.bbox, p.class, p.score, highlight);
+        }
+
+        // Update UI
+        peopleCountEl.textContent = peopleCount;
+
+        // Log for debugging (last few)
+        if (filtered.length) {
+          lastDetections = filtered.map(p => `${p.class} ${(p.score*100).toFixed(0)}%`).slice(0,8);
+          logLine('Detected: ' + lastDetections.join(', '));
+        }
+
+        // Optional audio alert if person is present (and has just appeared)
+        if (toggleAudio.checked) {
+          if (peopleCount > 0 && !lastPersonDetected) {
+            // Person newly detected
+            try { beep(); } catch(e) { /* audio context might be suspended until user gesture */ }
+          }
+        }
+        lastPersonDetected = (peopleCount > 0);
+      } catch (err) {
+        console.error('Detection error', err);
+        logLine('Detection error: ' + (err.message || err));
+      }
+
+      requestAnimationFrame(detectLoop);
+    }
+
+    // Snapshot / download helper
+    snapshotBtn.addEventListener('click', () => {
+      const snapCanvas = document.createElement('canvas');
+      snapCanvas.width = overlay.width;
+      snapCanvas.height = overlay.height;
+      const sctx = snapCanvas.getContext('2d');
+      // draw video then overlay on top
+      sctx.drawImage(video, 0, 0, snapCanvas.width, snapCanvas.height);
+      sctx.drawImage(overlay, 0, 0);
+      const data = snapCanvas.toDataURL('image/png');
+      // open in new tab
+      const w = window.open('', '_blank');
+      if (w) w.document.write(`<img src="${data}" alt="snapshot">`);
+    });
+
+    let lastDownloadData = null;
+    downloadBtn.addEventListener('click', () => {
+      const snapCanvas = document.createElement('canvas');
+      snapCanvas.width = overlay.width;
+      snapCanvas.height = overlay.height;
+      const sctx = snapCanvas.getContext('2d');
+      sctx.drawImage(video, 0, 0, snapCanvas.width, snapCanvas.height);
+      sctx.drawImage(overlay, 0, 0);
+      snapCanvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'snapshot.png';
+        a.click();
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    });
+
+    // Initialize everything
+    const camReady = await setupCamera();
+    if (!camReady) return;
+    await loadModel();
+
+    // Kick off detection loop
+    requestAnimationFrame(detectLoop);
+
+    // resume audio context on user gesture if needed
+    document.body.addEventListener('click', () => {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }, { once: true });
+
+  })();
+  </script>
+</body>
+</html>

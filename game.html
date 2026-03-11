@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the Ball Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #87cefa;
+        }
+
+        .ball {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ff4500;
+        }
+
+        .scoreboard {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .start-button:hover {
+            background-color: #218838;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="scoreboard">Score: <span id="score">0</span></div>
+        <button class="start-button">Start Game</button>
+        <div id="ball" class="ball hidden"></div>
+    </div>
+
+    <script>
+        const ball = document.getElementById('ball');
+        const scoreDisplay = document.getElementById('score');
+        const startButton = document.querySelector('.start-button');
+        const gameContainer = document.querySelector('.game-container');
+
+        let score = 0;
+        let gameInterval;
+
+        // Function to generate a random position
+        function getRandomPosition() {
+            const x = Math.random() * (gameContainer.offsetWidth - ball.offsetWidth);
+            const y = Math.random() * (gameContainer.offsetHeight - ball.offsetHeight);
+            return { x, y };
+        }
+
+        // Function to start the game
+        function startGame() {
+            score = 0;
+            scoreDisplay.textContent = score;
+            startButton.classList.add('hidden');
+            ball.classList.remove('hidden');
+
+            gameInterval = setInterval(() => {
+                const position = getRandomPosition();
+                ball.style.left = `${position.x}px`;
+                ball.style.top = `${position.y}px`;
+            }, 1000);
+        }
+
+        // Function to handle ball click
+        ball.addEventListener('click', () => {
+            score++;
+            scoreDisplay.textContent = score;
+        });
+
+        // Attach event listener to start button
+        startButton.addEventListener('click', startGame);
+
+        // Stop game after 30 seconds
+        setTimeout(() => {
+            clearInterval(gameInterval);
+            ball.classList.add('hidden');
+            startButton.classList.remove('hidden');
+            startButton.textContent = 'Play Again';
+        }, 30000);
+    </script>
+</body>
+</html>

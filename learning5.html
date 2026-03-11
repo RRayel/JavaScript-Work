@@ -1,0 +1,36 @@
+<!--DOCUMENT OBJECT MODEL-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            DOM(Document object model)
+        </title>
+    </head>
+    <body>
+        <button>hello</button>
+        <button class="js-button">button2</button> <!-- gives it a class attribut so it can be called later-->
+
+        <script>
+
+            document.querySelector('button');
+            console.log(document.querySelector('button'));
+            document.querySelector('button').innerHTML = 'Changed';
+
+            console.log(document.querySelector('.js-button')); // rather than using a button uses the class name
+            const buttonElement = document.querySelector('.js-button');
+            console.log(buttonElement);
+
+            /*
+            console.log(document.title);
+            console.log(document.body);
+            console.log(document.body.innerHTML);// shows everything inside the the html body 
+            document.body.innerHTML = "<button>good job</button>";
+            */
+          /*  
+          document.body.innerHTML = 'hello';
+          document.title = 'good job';  
+          */
+        </script>
+    </body>
+
+</html>

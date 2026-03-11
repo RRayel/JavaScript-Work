@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion and Animation Example</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            overflow: hidden;
+        }
+
+        /* The bouncing ball */
+        .ball {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        /* Keyframe animation to change the form and color */
+        @keyframes bounce {
+            0% {
+                transform: scale(1) rotate(0deg);
+                background-color: #3498db;
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                background-color: #e74c3c;
+            }
+            100% {
+                transform: scale(1) rotate(360deg);
+                background-color: #3498db;
+            }
+        }
+
+        .ball.animate {
+            animation: bounce 3s infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ball" id="ball"></div>
+
+    <script>
+        const ball = document.getElementById('ball');
+
+        // Add animation to the ball when the page loads
+        ball.classList.add('animate');
+
+        // Function to move the ball to a random position on the screen
+        function moveBall() {
+            const randomX = Math.floor(Math.random() * (window.innerWidth - 100));
+            const randomY = Math.floor(Math.random() * (window.innerHeight - 100));
+
+            // Move the ball to the new random position
+            ball.style.left = randomX + 'px';
+            ball.style.top = randomY + 'px';
+        }
+
+        // Event listener for click to move the ball
+        ball.addEventListener('click', moveBall);
+    </script>
+
+</body>
+</html>

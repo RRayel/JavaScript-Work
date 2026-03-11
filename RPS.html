@@ -1,0 +1,79 @@
+<!--ROCK PAPER SCISSORS GAME-->
+<!--Keeps track of wins and loses-->
+<!--Displays the score on the webpage
+Now we are making more modern-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ROCK PAPER SCISSORS</title>
+        <link 
+        rel="stylesheet"
+        href="RPS.css">
+        
+    </head>
+
+
+    <body>
+        <p class="title">
+            Rock Paper Scissors
+        </p>
+        <button onclick = "
+        let computerMove = pickComputerMove();
+
+        //console.log(computerMove);
+        playGame('Rock', computerMove);
+        
+        " class="move-button"> 
+        <img src="images/rock-emoji.png" class="image-icon"> 
+        
+        </button> 
+         
+        
+
+        
+        <button onclick=
+        "
+        let computerMove2 = pickComputerMove();
+        console.log(computerMove2);
+        playGame('Paper', computerMove2);
+        " class="move-button" 
+        >
+        <img src="images/paper-emoji.png" class="image-icon">
+        </button>
+
+
+        <button onclick=
+        "
+        let computerMove3 = pickComputerMove();
+        console.log(computerMove3);
+        playGame('Scissors', computerMove3);
+        
+        "
+         title = "Scissors" class="move-button">
+         <img src="images/scissors-emoji.png" class="image-icon">
+        </button>
+
+         <p class="js-result"></p>
+         <p class="js-move"></p>
+         <p class="js-score score"></p>
+
+
+         <button onclick=
+         "
+                score.wins = 0;
+                score.losses = 0;
+                score.ties = 0;
+                localStorage.removeItem('score');
+                updateScore();
+         "  
+         title="Reset" class="reset-button">Reset Score</button>
+         <button onclick=
+         "
+            autoplay();
+         " class="auto-play-button">Auto Play</button>
+
+
+        <script src ="RPS.js"></script>
+    </body>
+
+</html>

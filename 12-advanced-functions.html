@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+    </head>
+
+    <body>
+        <script>
+            //hoisting allowws us to call functions before they are declared
+            function greeting()
+            {
+                console.log("Hello");
+            }
+
+            greeting();
+
+            const num = 2;
+            const function1 = function() //anonymous function
+            {
+                console.log('hello 2');
+            };
+
+            console.log(function1);
+            console.log(typeof function1);
+            function1();
+
+            const object1 = 
+            {
+                num: 2,
+                fun:function greeting()
+                {
+                    console.log("hello 3");
+                }
+            };
+
+            console.log(object1.fun())
+
+            function display(param)
+            {
+                console.log(param);
+            }
+
+            display(2+3);
+
+            function run(param)
+            {
+                param();
+            }
+
+            run(function()
+            {
+                console.log("hello from callback function");
+            });
+
+            setTimeout(function()//this is known as asynchronous function
+            {
+                console.log('Timeout');
+            }, 3000);
+
+            console.log('Next line');
+            let intervalId;
+            intervalId=
+            setInterval(function()
+            {
+                console.log('interval');
+            }, 3000);
+
+            clearInterval(intervalId);
+            console.log('after interval');
+
+            let chore = ['washing dishes', 'cleaning room', 'doing laundry'];
+            chore.forEach(function(item)
+            {
+                console.log(item);
+            })
+            
+        </script>
+    </body>
+</html>

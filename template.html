@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<!-- 
+  Author: Phil Smith
+  Date: 1/14/2020
+  Title: template.html
+
+-->
+
+<html>
+	<head>
+		 <!-- link to my stylesheet below -->
+		 <link rel="stylesheet" href="template.css">
+		 <!-- link to my javascript code below -->
+		<script src="template.js"></script>
+		<title> </title>
+		<script>
+			// create global variables
+			var mname=['January','February','March','April','May','June','July','August','September','October','November','December'];
+			var mdays=[31,28,31,30,31,30,31,31,30,31,30,31];
+			var dayname =['S','M','T','W','T','F','S'];	
+			var today = new Date();
+			var yr = today.getFullYear();
+			var mth = today.getMonth();
+			var dom = today.getDate();
+		</script>
+	</head>
+
+	<body>
+	<div id="today">
+	   <h3>Today's Date<h3>
+	   <h3 id ="thisdate">  <script>shortdate()</script></h3> 
+	 </div>	
+	
+	<button onclick="calendar(mth,yr )">Create Calendar</button>
+	<button onclick="calendar(mth,yr+1 )">+</button>
+	<div id="calendar">
+	   
+	 </div>
+	</body>
+</html>

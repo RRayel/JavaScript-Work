@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jet Dashboard</title>
+  <link rel="stylesheet" href="jet.css" />
+  <script src="jet.js" defer></script>
+</head>
+<body>
+  <header class="header">
+    <h1>Jet Dashboard</h1>
+  </header>
+
+  <main class="dashboard">
+    <section class="card telemetry">
+      <h2>Telemetry</h2>
+      <ul>
+        <li>Intake <span id="Intake">0</span> °F</li>
+        <li>Exhaust <span id="Exhaust">0</span> °F</li>
+        <li>Fuel Pressure <span id="Fuel-Pressure">0</span> PSI</li>
+        <li>RPM <span id="RPM">100</span></li>
+        <li>Voltage <span id="Voltage">12.0</span> V</li>
+        <li>Uptime <input type="time" placeholder="HH:MM" /></li>
+      </ul>
+    </section>
+
+    <section class="card controls">
+      <h2>Controls</h2>
+      <ul>
+        <li>Ignition <button id="ignition-btn" class="btn danger">OFF</button></li>
+        <li>Fan <span id="Fan">0</span> RPM</li>
+        <li>Fuel Valve <button id="fuelvalve-btn" class="btn">OFF</button></li>
+        <li>Starter <button id="starter-btn" class="btn primary">START</button></li>
+      </ul>
+    </section>
+
+    <section class="card slider-card">
+      <h2>Fan Speed</h2>
+      <input type="range" min="1" max="100" value="50" class="slider" id="fanSpeed" />
+    </section>
+
+    <section class="card alarm">
+      <h2>Alarms</h2>
+      <ul>
+        <li>High Temp Alarm <span id="temperature">0</span> °F</li>
+        <li>Pressure Limit <span id="pressure-limit">0</span> PSI</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

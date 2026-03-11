@@ -1,0 +1,13 @@
+#tasks { 
+    float: right;  
+    width: 25em; 
+    margin: 0 0 .5em; 
+    padding: 1em; 
+    border: 2px solid black; 
+    } 
+    #tasks a { 
+    margin-right: 0.5em; 
+    } 
+    .clear { 
+    clear: both; 
+    }  

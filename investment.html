@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Slideshow Example</title>
+  <style>
+    #slideshow {
+      width: 400px;
+      height: 300px;
+      margin: 0 auto;
+      position: relative;
+    }
+    #slideshow img {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+    #slideshow img.active {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="slideshow">
+    <img class="slide" src="i.jpg" alt="Slide 1" />
+    <img class="slide" src="image2.jpg" alt="Slide 2" />
+    <img class="slide" src="image3.jpg" alt="Slide 3" />
+  </div>
+
+  <script>
+    // Preload all images
+    var images = document.querySelectorAll("#slideshow .slide");
+    var loadedImages = [];
+    images.forEach(function(img) {
+      var newImage = new Image();
+      newImage.src = img.src;
+      loadedImages.push(newImage);
+    });
+
+    // Slideshow functionality
+    var currentIndex = 0;
+    function showSlide(index) {
+      images.forEach(function(img, i) {
+        img.classList.remove("active");
+        if (i === index) {
+          img.classList.add("active");
+        }
+      });
+    }
+
+    // Auto-slideshow
+    setInterval(function() {
+      currentIndex = (currentIndex + 1) % images.length;
+      showSlide(currentIndex);
+    }, 3000); // Change image every 3 seconds
+  </script>
+</body>
+</html>

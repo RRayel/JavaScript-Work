@@ -1,0 +1,41 @@
+<!--LEARNING ABOUT OBJECTS-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Objects</title>
+    </head>
+    <body>
+        <script>
+            const product = 
+            {
+                name: 'socks',
+                price: 1090.0,
+                rating: 
+                {
+                    stars: 4.5,
+                    count: 87
+                },
+                fun: function func()
+                {
+                    console.log('function inside object');
+                }
+            };
+            product.name = 'shirt';
+            console.log(product.name);
+            product.available = true;
+            console.log(product);
+            console.log(product.rating.stars);
+            product.fun();
+
+            //json(javascript object notation) json is more universal for other langauges
+            
+            let jstring = JSON.stringify(product);
+            console.log(JSON.parse(jstring));
+
+            //local storage
+            localStorage.setItem('message', 'hello'); // only accepts strings as argument
+            
+
+        </script>
+    </body>
+</html>

@@ -1,0 +1,51 @@
+/* General calendar styling */
+#calendar {
+    display: grid;
+  grid-template-columns: auto auto auto;
+  padding: 10px;
+}
+
+.month {
+    width: 22%;
+    margin: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+table {
+    width: 100%;
+    table-layout:fixed;
+    border-collapse: collapse;
+}
+
+td {
+    width: 14%;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+td.blank {
+    background-color: #f9f9f9;
+}
+
+th {
+    text-align: center;
+    padding: 5px;
+    font-weight: bold;
+}
+
+.calhead {
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px 0;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+}
